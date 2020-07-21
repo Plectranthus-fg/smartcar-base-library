@@ -124,16 +124,104 @@ namespace img {
     */
     int Binarize(uint8_t *img, uint8_t threshold) {
         for (int i = 0; i < pixel_total; ++i) {
-            if (img[i] < threshold) {
-                img[i] = 0;
-            } else {
-                img[i] = 255;
-            }
+            (img[i] < threshold) ? img[i] = 0 : img[i] = 255;
         }
         return 0;
     }
 
-//    int Convolution(){
-//
-//    }
+    /*
+        function: GaussianConvolution
+        last edited: 2020/07/17 13:07
+        last edit by: Plectranthus_fg
+        description: Use Gaussian Convolutional kernel to convolute image with same padding
+        Convolutional kernel = [1/16    2/16    1/16]
+                               [2/16    4/16    2/16]
+                               [1/16    2/16    1/16]
+    */
+    int GaussianConvolution(uint8_t *img) {
+        uint8_t image[img_height][img_width];
+        std::memcpy(image, img, sizeof(image));
+        img[0] =
+                (image[0][0] / 16) + (image[0][0] / 8) + (image[0][1] / 16) +
+                (image[0][0] / 8) + (image[0][0] / 4) + (image[0][1] / 8) +
+                (image[1][0] / 16) + (image[1][0] / 8) + (image[1][1] / 16);
+        for (int i = 1; i < img_width - 1; ++i) {
+            img[i] =
+                    (image[0][i - 1] / 16) + (image[0][i] / 8) + (image[0][i + 1] / 16) +
+                    (image[0][i - 1] / 8) + (image[0][i] / 4) + (image[0][i + 1] / 8) +
+                    (image[1][i - 1] / 16) + (image[1][i] / 8) + (image[1][i + 1] / 16);
+        }
+        img[img_width - 1] =
+                (image[0][img_width - 2] / 16) + (image[0][img_width - 1] / 8) + (image[0][img_width - 1] / 16) +
+                (image[0][img_width - 2] / 8) + (image[0][img_width - 1] / 4) + (image[0][img_width - 1] / 8) +
+                (image[1][img_width - 2] / 16) + (image[1][img_width - 1] / 8) + (image[1][img_width - 1] / 16);
+        for (int j = img_width; j < (img_height - 1) * img_width - 1; ++j) {
+            if (j % img_width == 0) {
+                img[j] =
+                        (image[j / img_width - 1][0] / 16) + (image[j / img_width - 1][0] / 8) +
+                        (image[j / img_width - 1][1] / 16) +
+                        (image[j / img_width][0] / 8) + (image[j / img_width][0] / 4) + (image[j / img_width][1] / 8) +
+                        (image[j / img_width + 1][0] / 16) + (image[j / img_width + 1][0] / 8) +
+                        (image[j / img_width + 1][1] / 16);
+            } else if (j % img_width == img_width - 1) {
+                img[j] =
+                        (image[j / img_width - 1][img_width - 2] / 16) + (image[j / img_width - 1][img_width - 1] / 8) +
+                        (image[j / img_width - 1][img_width - 1] / 16) +
+                        (image[j / img_width][img_width - 2] / 8) + (image[j / img_width][img_width - 1] / 4) +
+                        (image[j / img_width][img_width - 1] / 8) +
+                        (image[j / img_width + 1][img_width - 2] / 16) + (image[j / img_width + 1][img_width - 1] / 8) +
+                        (image[j / img_width + 1][img_width - 1] / 16);
+            } else {
+                img[j] =
+                        (image[j / img_width - 1][j % img_width - 1] / 16) +
+                        (image[j / img_width - 1][j % img_width] / 8) +
+                        (image[j / img_width - 1][j % img_width + 1] / 16) +
+                        (image[j / img_width][j % img_width - 1] / 8) +
+                        (image[j / img_width][j % img_width] / 4) +
+                        (image[j / img_width][j % img_width + 1] / 8) +
+                        (image[j / img_width + 1][j % img_width - 1] / 16) +
+                        (image[j / img_width + 1][j % img_width] / 8) +
+                        (image[j / img_width + 1][j % img_width + 1] / 16);
+            }
+        }
+        img[pixel_total - img_width] =
+                (image[img_height - 1][0] / 16) + (image[0][0] / 8) + (image[0][1] / 16) +
+                (image[0][0] / 8) + (image[0][0] / 4) + (image[0][1] / 8) +
+                (image[1][0] / 16) + (image[1][0] / 8) + (image[1][1] / 16);
+        for (int k = pixel_total - img_width + 1; k < pixel_total - 1; ++k) {
+            (image[img_height - 2][k % img_width - 1] / 16) +
+            (image[img_height - 2][k % img_width] / 8) +
+            (image[img_height - 2][k % img_width + 1] / 16) +
+            (image[img_height - 1][k % img_width - 1] / 8) +
+            (image[img_height - 1][k % img_width] / 4) +
+            (image[img_height - 1][k % img_width + 1] / 8) +
+            (image[img_height - 1][k % img_width - 1] / 16) +
+            (image[img_height - 1][k % img_width] / 8) +
+            (image[img_height - 1][k % img_width + 1] / 16);
+        }
+        img[pixel_total - 1] =
+                (image[img_height - 2][img_width - 2] / 16) +
+                (image[img_height - 2][img_width - 1] / 8) +
+                (image[img_height - 2][img_width - 1] / 16) +
+                (image[img_height - 1][img_width - 2] / 8) +
+                (image[img_height - 1][img_width - 1] / 4) +
+                (image[img_height - 1][img_width - 1] / 8) +
+                (image[img_height - 1][img_width - 2] / 16) +
+                (image[img_height - 1][img_width - 1] / 8) +
+                (image[img_height - 1][img_width - 1] / 16);;
+        return 0;
+    }
+
+    /*
+    function: ImageFilter
+    last edited: 2020/07/21 0:21
+    last edit by: Plectranthus_fg
+    description: Find the edge of the binary image
+    */
+    int ImageFilter(uint8_t *img) {
+        for (int i = 0; i < pixel_total; ++i) {
+            (img[i] == 0x00 || img[i] == 0xF7) ? img[i] = 0xFF : img[i] = 0x00;
+        }
+        return 0;
+    }
 };

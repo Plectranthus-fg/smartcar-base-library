@@ -3,7 +3,8 @@
 
 #include "base_img.h"
 
-#define filename "../picture_fixed.txt"
+#define filename "../PHOTO9(1).txt"
+#define output_file "../output_img_1.txt"
 
 #include <vector>
 
@@ -21,11 +22,26 @@ int main() {
             int input_value;
             buf.clear();
             image_txt >> word;
-            buf << std::dec << word;
+            buf << std::hex << word;
             buf >> input_value;
             image[i][j] = input_value;
         }
     }
+    std::ofstream output(output_file);
+
+    for (int i = 0; i < img_height; i++) {
+        output << "{";
+        for (int j = 0; j < img_width; j++) {
+            (j != img_width - 1)?
+            output << (unsigned) image[i][j] << ",":output << (unsigned) image[i][j];
+        }
+        output << "}" <<std::endl;
+    }
+
+
+    cv::Mat origin_pic(img_height, img_width, CV_8UC1, (uint8_t*)image );
+    cv::imshow("origin_pic",origin_pic);
+
     auto histogram = img::Histo(*image);
     for (int i = 0; i < 256; i++) {
         std::cout << histogram[i] << "\t";
@@ -36,10 +52,14 @@ int main() {
     std::cout << unsigned(threshold) << std::endl;
     delete []histogram;
     img::Binarize(*image,threshold);
+    img::GaussianConvolution(*image);
+    cv::Mat alter_pic(img_height, img_width, CV_8UC1, (uint8_t*)image );
+    cv::imshow("pic1",alter_pic);
+    img::ImageFilter(*image);
 
     //picture display
-    cv::Mat mat(img_height, img_width, CV_8UC1, (uint8_t*)image );
-    cv::imshow("pic",mat);
+    cv::Mat final_pic(img_height, img_width, CV_8UC1, (uint8_t*)image );
+    cv::imshow("pic2",final_pic);
     cv::waitKey();
 
 //    // output the picture as number

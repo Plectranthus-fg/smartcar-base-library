@@ -6,15 +6,16 @@
 #define IMG_BASE_IMG_H
 
 #ifndef img_height
-#define img_height 40
+#define img_height 120
 #endif
 #ifndef img_width
-#define img_width 200
+#define img_width 188
 #endif
 
-#include "cstdint"
+#include <cstdint>
 #include <bitset>
 #include <vector>
+#include <cstring>
 
 extern int pixel_total;
 namespace img {
@@ -26,8 +27,7 @@ namespace img {
 
     uint8_t IterationThreshold(int *histogram);
 
-    typedef struct {
-        int x, y;
-    } point;
+    int GaussianConvolution(uint8_t *img);
+    int ImageFilter(uint8_t *img);
 }
 #endif //IMG_BASE_IMG_H
