@@ -5,11 +5,11 @@
 #ifndef IMG_BASE_IMG_H
 #define IMG_BASE_IMG_H
 
-#ifndef img_height
-#define img_height 120
-#endif
 #ifndef img_width
 #define img_width 188
+#endif
+#ifndef img_height
+#define img_height 120
 #endif
 
 #include <cstdint>
@@ -20,14 +20,15 @@
 extern int pixel_total;
 namespace img {
     int *Histo(uint8_t *img);
-
     uint8_t OtsuThreshold(int *histogram);
-
     int Binarize(uint8_t *img, uint8_t threshold);
-
     uint8_t IterationThreshold(int *histogram);
-
     int GaussianConvolution(uint8_t *img);
     int ImageFilter(uint8_t *img);
+
+    class Point{
+        public:
+            int x_,y_;
+    };
 }
 #endif //IMG_BASE_IMG_H

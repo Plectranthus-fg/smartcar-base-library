@@ -224,4 +224,4 @@ namespace img {
         }
         return 0;
     }
-};
+}
