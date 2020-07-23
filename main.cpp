@@ -36,47 +36,37 @@ int main() {
 //            (j != img_width - 1)?
 //            output << (unsigned) image[i][j] << ",":output << (unsigned) image[i][j];
 //        }
-//        output << "}" <<std::endl;
+//        output << "}" << std::endl;
 //    }
 
 
     cv::Mat origin_pic(img_height, img_width, CV_8UC1, (uint8_t*)image );
     cv::imshow("origin_pic",origin_pic);
+    cv::imwrite("final_img.png",origin_pic);
 
     auto histogram = img::Histo(*image);
     for (int i = 0; i < 256; i++) {
         std::cout << histogram[i] << "\t";
     }
     std::cout << std::endl;
-    uint8_t threshold = img::OtsuThreshold(histogram);
-//    uint8_t threshold = img::IterationThreshold(histogram);
+    //uint8_t threshold = img::OtsuThreshold(histogram);
+    uint8_t threshold = img::IterationThreshold(histogram);
     std::cout << unsigned(threshold) << std::endl;
     delete []histogram;
+    histogram = nullptr;
     img::Binarize(*image,threshold);
     img::GaussianConvolution(*image);
     cv::Mat alter_pic(img_height, img_width, CV_8UC1, (uint8_t*)image );
     cv::imshow("pic1",alter_pic);
     img::ImageFilter(*image);
-    auto curve = path::IntersectionCurveInit(50);
-    for (auto k = curve.begin(); k != curve.end() ; ++k) {
-        image[img_height - 1 - k->y_][k->x_] = 0x00;
-    }
-    curve = path::IntersectionCurveInit(75);
-    for (auto k = curve.begin(); k != curve.end() ; ++k) {
-        image[img_height - 1 - k->y_][k->x_] = 0x00;
-    }
-    curve = path::IntersectionCurveInit(100);
-    for (auto k = curve.begin(); k != curve.end() ; ++k) {
-        image[img_height - 1 - k->y_][k->x_] = 0x00;
-    }
-    curve = path::IntersectionCurveInit(25);
-    for (auto k = curve.begin(); k != curve.end() ; ++k) {
-        image[img_height - 1 - k->y_][k->x_] = 0x00;
+    auto new_img = img::PerspectiveTransform(*image, 25);
+    for (auto k = new_img.begin(); k != new_img.end() ; ++k) {
+        std::cerr  << k->to_string() << std::endl;
     }
     //picture display
     cv::Mat final_pic(img_height, img_width, CV_8UC1, (uint8_t*)image );
     cv::imshow("pic2",final_pic);
-    cv::imwrite("final_img.png",final_pic);
+
     cv::waitKey();
 
 //    // output the picture as number

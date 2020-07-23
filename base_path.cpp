@@ -14,14 +14,15 @@ namespace path {
      y = -a * x^2 + c
      c means the roi area height
     */
+    /*!!!unusable!!!*/
     std::vector<img::Point> IntersectionCurveInit(int c) {
-        double_t curve_width = (img_height - c) / img_height * img_width;
+        int curve_width = ((img_height - c) / (double_t)img_height) * img_width;
         double_t aDouble = 4 * c / pow(curve_width, 2);
         std::vector<img::Point> curve;
         img::Point cache;
-        for (int i = (img_width - curve_width) / 2; i < (img_width + curve_width) / 2; ++i) {
+        for (int i = (img_width + 1 - curve_width) / 2; i < (img_width + curve_width - 1) / 2; ++i) {
             cache.x_ = i;
-            cache.y_ = round(-1 * aDouble * pow(i - curve_width / 2, 2) + c);
+            cache.y_ = round(-1 * aDouble * pow(i - img_width/2, 2) + c);
             curve.push_back(cache);
         }
         return curve;

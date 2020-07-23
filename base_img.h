@@ -30,5 +30,6 @@ namespace img {
         public:
             int x_,y_;
     };
+    std::vector<std::bitset<img_width>> PerspectiveTransform(uint8_t *img, int bottom_width);
 }
 #endif //IMG_BASE_IMG_H

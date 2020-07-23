@@ -2,6 +2,7 @@
 // Created by plectranthus_fg on 2020/07/13.
 //
 #include "base_img.h"
+#include <cmath>
 
 
 int pixel_total = img_height * img_width;
@@ -188,17 +189,6 @@ namespace img {
                 (image[img_height - 1][0] / 16) + (image[0][0] / 8) + (image[0][1] / 16) +
                 (image[0][0] / 8) + (image[0][0] / 4) + (image[0][1] / 8) +
                 (image[1][0] / 16) + (image[1][0] / 8) + (image[1][1] / 16);
-        for (int k = pixel_total - img_width + 1; k < pixel_total - 1; ++k) {
-            (image[img_height - 2][k % img_width - 1] / 16) +
-            (image[img_height - 2][k % img_width] / 8) +
-            (image[img_height - 2][k % img_width + 1] / 16) +
-            (image[img_height - 1][k % img_width - 1] / 8) +
-            (image[img_height - 1][k % img_width] / 4) +
-            (image[img_height - 1][k % img_width + 1] / 8) +
-            (image[img_height - 1][k % img_width - 1] / 16) +
-            (image[img_height - 1][k % img_width] / 8) +
-            (image[img_height - 1][k % img_width + 1] / 16);
-        }
         img[pixel_total - 1] =
                 (image[img_height - 2][img_width - 2] / 16) +
                 (image[img_height - 2][img_width - 1] / 8) +
@@ -223,5 +213,29 @@ namespace img {
             (img[i] == 0x00 || img[i] == 0xF7) ? img[i] = 0xFF : img[i] = 0x00;
         }
         return 0;
+    }
+
+    /*
+    function: ImageFilter
+    last edited: 2020/07/23 20:54
+    last edit by: Plectranthus_fg
+    description: Find the edge of the binary image
+    */
+    std::vector<std::bitset<img_width>> PerspectiveTransform(uint8_t *img, int bottom_width) {
+        std::vector<std::bitset<img_width>> top_down_perspective;
+        std::bitset<img_width> cache = {0};
+        for (int i = 0; i < img_height; ++i) {
+            auto line_width = (img_height - i) / (double) img_height *
+                              (img_width - bottom_width) + bottom_width;
+            for (int j = 0; j < img_width; ++j) {
+                if (img[i*img_width + j] == 0x00) {
+                    int a = (int) round(line_width / img_width * j + (img_width - line_width) / 2);
+                    cache[img_width - a] = true;
+                }
+            }
+            top_down_perspective.push_back(cache);
+            cache = {0};
+        }
+        return top_down_perspective;
     }
 }
