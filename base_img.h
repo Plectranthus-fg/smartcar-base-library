@@ -9,7 +9,7 @@
 #define img_width 188
 #endif
 #ifndef img_height
-#define img_height 120
+#define img_height 80
 #endif
 
 #include <cstdint>

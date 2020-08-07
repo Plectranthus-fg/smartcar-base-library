@@ -216,10 +216,10 @@ namespace img {
     }
 
     /*
-    function: ImageFilter
-    last edited: 2020/07/23 20:54
+    function: PerspectiveTransform
+    last edited: 2020/07/25 17:48
     last edit by: Plectranthus_fg
-    description: Find the edge of the binary image
+    description: Perspective transformation on vertical direction
     */
     std::vector<std::bitset<img_width>> PerspectiveTransform(uint8_t *img, int bottom_width) {
         std::vector<std::bitset<img_width>> top_down_perspective;

@@ -10,6 +10,7 @@
 
 namespace path {
     std::vector<img::Point> IntersectionCurveInit(int c);
+    std::vector<img::Point> CircleInit(int r);
 }
 
 #endif //IMG_BASE_PATH_H

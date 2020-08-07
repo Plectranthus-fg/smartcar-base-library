@@ -4,7 +4,7 @@
 #include "base_img.h"
 #include "base_path.h"
 
-#define filename "../Left.txt"
+#define filename "../photo28.txt"
 // #define output_file "../output_img_1.txt"
 
 #include <vector>
@@ -24,7 +24,7 @@ int main() {
             buf.clear();
             image_txt >> word;
             buf << std::hex << word;
-            buf >> input_value;
+             buf >> input_value;
             image[i][j] = input_value;
         }
     }
@@ -40,9 +40,9 @@ int main() {
 //    }
 
 
-    cv::Mat origin_pic(img_height, img_width, CV_8UC1, (uint8_t*)image );
-    cv::imshow("origin_pic",origin_pic);
-    cv::imwrite("final_img.png",origin_pic);
+    cv::Mat origin_pic(img_height, img_width, CV_8UC1, (uint8_t *) image);
+    cv::imshow("origin_pic", origin_pic);
+    cv::imwrite("final_img.png", origin_pic);
 
     auto histogram = img::Histo(*image);
     for (int i = 0; i < 256; i++) {
@@ -52,20 +52,32 @@ int main() {
     //uint8_t threshold = img::OtsuThreshold(histogram);
     uint8_t threshold = img::IterationThreshold(histogram);
     std::cout << unsigned(threshold) << std::endl;
-    delete []histogram;
+    delete[]histogram;
     histogram = nullptr;
-    img::Binarize(*image,threshold);
+    img::Binarize(*image, threshold);
     img::GaussianConvolution(*image);
-    cv::Mat alter_pic(img_height, img_width, CV_8UC1, (uint8_t*)image );
-    cv::imshow("pic1",alter_pic);
+    cv::Mat alter_pic(img_height, img_width, CV_8UC1, (uint8_t *) image);
+    cv::imshow("pic1", alter_pic);
     img::ImageFilter(*image);
-    auto new_img = img::PerspectiveTransform(*image, 25);
+    auto new_img = img::PerspectiveTransform(*image, 30);
+    //img show
+    auto circle = path::CircleInit(60);
+    for (auto k = circle.begin(); k != circle.end() ; ++k) {
+        new_img[k->y_][img_width - k->x_] = true;
+    }
+    cv::Mat tran(img_height, img_width, CV_8UC1);
+    for (int k = 0; k < img_height; ++k) {
+        for (int i = 0; i < img_width; ++i) {
+            (new_img[k][img_width - i] == 1) ? tran.at<uint8_t>(k, i) = 0x00 : tran.at<uint8_t>(k, i) = 0xFF;
+        }
+    }
+    cv::imshow("trans",tran);
     for (auto k = new_img.begin(); k != new_img.end() ; ++k) {
         std::cerr  << k->to_string() << std::endl;
     }
     //picture display
-    cv::Mat final_pic(img_height, img_width, CV_8UC1, (uint8_t*)image );
-    cv::imshow("pic2",final_pic);
+    cv::Mat final_pic(img_height, img_width, CV_8UC1, (uint8_t *) image);
+    cv::imshow("pic2", final_pic);
 
     cv::waitKey();
 
